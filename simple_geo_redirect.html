@@ -1,0 +1,43 @@
+<html>
+  <head><title>Where the F are you at?</title>
+
+    <!-- <script src="modernizr-1.5.min.js"></script> -->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+<script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+<script type="text/javascript" src="geo.js" charser="utf-8"></script>
+<body>
+<div class="moo"></div>
+Craigslist
+
+<script>
+    function get_location() { 
+      if(geo_position_js.init()){
+        geo_position_js.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true,options:5000});
+      }
+      else{
+        alert("Functionality not available");
+      }
+    }
+    function success_callback(p)
+    {
+   //   alert('lat='+p.coords.latitude.toFixed(2)+';lon='+p.coords.longitude.toFixed(2));
+      console.log("yeah");
+      $.getJSON("http://127.0.0.1/areas.json", function(areas) { 
+      $.each(areas, function(i,item){
+            console.log(item);
+            });
+      }, function() { alert("nope");} );
+    }
+    
+    function error_callback(p)
+    {
+      alert('error='+p.message);
+    }           
+
+$(document).ready(get_location);
+  </script>
+
+
+</body>
+</html>
+
