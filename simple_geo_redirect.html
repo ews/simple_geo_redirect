@@ -20,9 +20,9 @@ Craigslist
     }
     function success_callback(p)
     {
-   //   alert('lat='+p.coords.latitude.toFixed(2)+';lon='+p.coords.longitude.toFixed(2));
+      alert('lat='+p.coords.latitude.toFixed(2)+';lon='+p.coords.longitude.toFixed(2));
       console.log("yeah");
-      $.getJSON("http://127.0.0.1/areas.json", function(areas) { 
+      $.getJSON("http://127.0.0.1/simple_geo_redirect/areas.json", function(areas) { 
       $.each(areas, function(i,item){
             console.log(item);
             });
