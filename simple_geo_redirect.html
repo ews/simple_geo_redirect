@@ -10,6 +10,16 @@
 Craigslist
 
 <script>
+
+  function great_circle_distance (lat1, lng1, lat2, lng2) { 
+    // gives distance between two pairs of coordinates, in KM
+    dlong = lng2-lng1;
+    dlat = lat2-lat1;
+    a = Math.pow((Math.sin(dlat / 2)), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow((Math.sin(dlong / 2)),2);
+    c = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+    dist = 3956 * c;
+    return dist;
+  } 
     function get_location() { 
       if(geo_position_js.init()){
         geo_position_js.getCurrentPosition(success_callback,error_callback,{enableHighAccuracy:true,options:5000});
@@ -18,15 +28,54 @@ Craigslist
         alert("Functionality not available");
       }
     }
-    function success_callback(p)
-    {
-      alert('lat='+p.coords.latitude.toFixed(2)+';lon='+p.coords.longitude.toFixed(2));
-      console.log("yeah");
-      $.getJSON("http://127.0.0.1/simple_geo_redirect/areas.json", function(areas) { 
-      $.each(areas, function(i,item){
-            console.log(item);
-            });
-      }, function() { alert("nope");} );
+
+    function keys(obj) {   // http://stackoverflow.com/questions/890807/iterate-over-a-javascript-associative-array-in-sorted-order
+      var keys = [];
+
+        for(var key in obj)
+        {
+            keys.push(key);
+        }
+
+        return keys;
+    } 
+
+function sortAssoc(aInput) { 
+    var aTemp = [];
+    for (var sKey in aInput)
+    aTemp.push([sKey, aInput[sKey]]);
+    aTemp.sort(function () {return arguments[0][1] < arguments[1][1]}); //problems with javascript and floats? WTF
+    //console.log(aTemp.length);
+
+    var aOutput = [];
+    for (var nIndex = aTemp.length-1; nIndex >=0; nIndex--){ 
+      //console.log(aTemp[nIndex][1]); 
+      aOutput[aTemp[nIndex][0]] = aTemp[nIndex][1];
+    }
+    //console.log(aOutput);
+
+    return aOutput;
+}
+
+    function success_callback(p)  {
+      console.log('lat='+p.coords.latitude+';lon='+p.coords.longitude);
+      console.log(p.coords);
+      var distance=[];
+      $.getJSON("http://localhost/simple_geo_redirect/areas.json", function(areas) { 
+      for (var hostname in areas) { 
+        coords = areas[hostname];
+        a = great_circle_distance(coords[0], coords[1], p.coords.latitude, p.coords.longitude);
+        //console.log(hostname + " " + coords + " " + a);
+          
+        // create a distance hash structure which maps hostname with the distance to our user
+        distance[hostname]=a;          
+      }
+      //console.log(keys(distance).sort().reverse());
+      for (i in sortAssoc(distance)) { console.log(i) };
+    }, function() { alert("nope");} );
+
+      //dummy example to show if the function is working
+      //console.log(great_circle_distance(36.532381, -6.301035, p.coords.latitude.toFixed(2), p.coords.longitude.toFixed(2)));
     }
     
     function error_callback(p)
